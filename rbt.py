@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional, Union
 
 
-class COLOR(Enum, str):
+class COLOR(str, Enum):
     """Defines color constants for Red-Black Tree nodes."""
     RED = "RED"
     BLACK = "BLACK"
