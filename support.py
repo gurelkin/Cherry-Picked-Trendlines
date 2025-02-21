@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.stats import norm
 
 from rbt import RedBlackTree  # Order statistics red-black tree
-from utils import validate_region
+from utils import validate_region, rectangular_region
 
 
 def baseline_unconstrained(
@@ -22,6 +22,14 @@ def baseline_unconstrained(
     @param quantifier: A function that extracts a numerical value from a record.
     @param statement: A tuple representing the lower and upper bounds for comparison.
     @return: The computed support as a float.
+
+    Example:
+    ```python
+    >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 6, 7, 8]})
+    >>> left = rectangular_region(data, {'A': (2, 4)})
+    >>> right = rectangular_region(data, {'B': (5, 7)})
+    >>> baseline_unconstrained(left, right, lambda x: x.A, (0, 2))
+    0.333...
     """
     lower, upper = statement
     satisfied = 0
@@ -46,6 +54,13 @@ def exact_unconstrained(
     @param quantifier: A function that extracts a numerical value from a record.
     @param statement: A tuple representing the lower and upper bounds for comparison.
     @return: The computed support as a float.
+
+    @example:
+    >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 6, 7, 8]})
+    >>> left = rectangular_region(data, {'A': (2, 4)})
+    >>> right = rectangular_region(data, {'B': (5, 7)})
+    >>> exact_unconstrained(left, right, lambda x: x.A, (0, 2))
+    0.333...
     """
     lower, upper = statement
     cumulative = np.array([quantifier(x1) for x1 in left_region.itertuples(index=False)])
@@ -76,6 +91,14 @@ def baseline_constrained(
     @param statement: A tuple representing the lower and upper bounds for comparison.
     @param constraints: A function that returns True if the pair satisfies the given constraints.
     @return: The computed support as a float.
+
+    @example:
+    >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
+    >>> left = rectangular_region(data, {'A': (2, 4)})
+    >>> right = rectangular_region(data, {'B': (5, 7)})
+    >>> constraints = lambda x1, x2: x1.B == x2.B
+    >>> baseline_constrained(left, right, lambda x: x.A, (-1, 1), constraints)
+    0.5
     """
     lower, upper = statement
     satisfied, total = 0, 0
@@ -104,6 +127,14 @@ def exact_constrained(
     @param statement: A tuple representing the lower and upper bounds for comparison.
     @param constraints: A function that returns True if the pair satisfies the given constraints.
     @return: The computed support as a float.
+
+    @example:
+    >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
+    >>> left = rectangular_region(data, {'A': (2, 4)})
+    >>> right = rectangular_region(data, {'B': (5, 7)})
+    >>> constraints = lambda x1, x2: x1.B == x2.B
+    >>> exact_constrained(left, right, lambda x: x.A, (-1, 1), constraints)
+    0.5
     """
     lower, upper = statement
     total, satisfied = 0, 0
@@ -148,6 +179,14 @@ def pair_sampling(
     @param constraints: A function that returns True if the pair satisfies the given constraints.
     @param confidence: The confidence level for the error estimation.
     @return: A tuple containing the estimated support and its error margin.
+
+    @example:
+    >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
+    >>> left = rectangular_region(data, {'A': (2, 4)})
+    >>> right = rectangular_region(data, {'B': (5, 7)})
+    >>> constraints = lambda x1, x2: x1.B == x2.B
+    >>> pair_sampling(data, left, right, lambda x: x.A, (-1, 1), constraints, 0.95)
+    (0.5, 0.015...)
     """
     lower, upper = statement
     satisfied = 0
@@ -178,6 +217,13 @@ def point_sampling(
     @param quantifier: A function that extracts a numerical value from a record.
     @param statement: A tuple representing the lower and upper bounds for comparison.
     @return: The estimated support as a float.
+
+    @example:
+    >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
+    >>> left = rectangular_region(data, {'A': (2, 4)})
+    >>> right = rectangular_region(data, {'B': (5, 7)})
+    >>> point_sampling(data, left, right, lambda x: x.A, (0, 2))
+    0.375
     """
     lower, upper = statement
     satisfied = 0
@@ -210,6 +256,13 @@ def tightest_statement(
     @param support: The desired support level (between 0 and 1 exclusive).
     @param constraints: Optional function to enforce additional constraints on valid pairs.
     @return: A tuple representing the lower and upper bounds for the optimal statement range.
+
+    @example:
+    >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
+    >>> left = rectangular_region(data, {'A': (2, 4)})
+    >>> right = rectangular_region(data, {'B': (5, 7)})
+    >>> tightest_statement(left, right, lambda x: x.A, 0.9, lambda x1, x2: x1.B == x2.B)
+    (-1, 1)
     """
     if constraints is None:
         differences = np.concatenate([[quantifier(x2) - quantifier(x1)
@@ -251,6 +304,13 @@ def most_supported_statement(
     @param constraints: Optional function to enforce additional constraints on valid pairs.
     @return: A tuple where the first element is the optimal (lower, upper) range,
              and the second element is the support level for this range.
+
+    @example:
+    >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
+    >>> left = rectangular_region(data, {'A': (1, 2)})
+    >>> right = rectangular_region(data, {'B': (5, 7)})
+    >>> most_supported_statement(left, right, lambda x: x.A, 2, lambda x1, x2: x1.B == x2.B)
+    ((-1.0, 1.0), 0.75)
     """
     if constraints is None:
         differences = np.concatenate([[quantifier(x2) - quantifier(x1)
