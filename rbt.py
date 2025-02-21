@@ -1,30 +1,59 @@
+from typing import Optional
+
 
 class COLOR:
+    """Defines color constants for Red-Black Tree nodes."""
     RED = "RED"
     BLACK = "BLACK"
 
+
 class Node:
-    def __init__(self, **kwargs):
-        self.key = kwargs["key"] if "key" in kwargs else None
-        self.color = kwargs["color"] if "color" in kwargs else None
-        self.left = kwargs["left"] if "left"       in kwargs else None
-        self.right = kwargs["right"] if "right" in kwargs else None
-        self.parent = kwargs["parent"] if "parent" in kwargs else None
-        self.size = kwargs["size"] if "size" in kwargs else 1
+    """
+    Represents a node in the Red-Black Tree with order statistics.
+
+    @param key: The key associated with the node.
+    @param color: The color of the node (RED or BLACK).
+    @param left: Reference to the left child node.
+    @param right: Reference to the right child node.
+    @param parent: Reference to the parent node.
+    @param size: The size of the subtree rooted at this node.
+    """
+    def __init__(
+        self, 
+        key: Optional[int] = None, 
+        color: Optional[str] = None, 
+        left: Optional["Node"] = None,
+        right: Optional["Node"] = None, 
+        parent: Optional["Node"] = None, 
+        size: int = 1
+    ):
+        self.key = key
+        self.color = color
+        self.left = left
+        self.right = right
+        self.parent = parent
+        self.size = size
 
 
 class RedBlackTree:
-    def __init__(self):
-        # Sentinel nil[T] object
-        NIL = Node(key="NIL", color=COLOR.BLACK, size=0)
-        # pointer to root node
-        self.T = NIL
-        # sentinel object
-        self.NIL = NIL
+    """
+    Implements a Red-Black Tree with order statistics.
 
-    # CLRS textbook OS-SELECT pseudocode
-    # page: 304
-    def select(self, x, i):
+    Supports insertion, deletion, rank selection, and size tracking.
+    """
+    def __init__(self):
+        """Initializes an empty Red-Black Tree with a NIL sentinel node."""
+        self.NIL = Node(key="NIL", color=COLOR.BLACK, size=0)
+        self.T = self.NIL  # Root of the tree
+
+    def select(self, x: Node, i: int) -> Node:
+        """
+        Returns the i-th smallest element in the subtree rooted at x.
+
+        @param x: The root node of the subtree.
+        @param i: The rank of the element to find.
+        @return: The node corresponding to the i-th smallest element.
+        """
         r = x.left.size + 1
         if i == r:
             return x
@@ -33,32 +62,42 @@ class RedBlackTree:
         else:
             return self.select(x.right, i - r)
 
-    # CLRS textbook OS-RANK pseudocode
-    # page: 305
-    def rank(self, x):
+    def rank(self, x: Node) -> int:
+        """
+        Returns the rank of node x within the tree.
+
+        @param x: The node whose rank is to be determined.
+        @return: The rank of x.
+        """
         r = x.left.size + 1
         y = x
         while y != self.T:
             if y == y.parent.right:
-                r = r + y.parent.left.size + 1
+                r += y.parent.left.size + 1
             y = y.parent
         return r
 
-    # A simple tree recursive search method
-    def find(self, x, i):
-        if x == self.NIL:
-            return self.NIL
-        if x.key == i:
+    def find(self, x: Node, i: int) -> Node:
+        """
+        Searches for a node with key i in the subtree rooted at x.
+
+        @param x: The root of the subtree to search.
+        @param i: The key value to find.
+        @return: The node with key i, or NIL if not found.
+        """
+        if x == self.NIL or x.key == i:
             return x
-        elif i < x.key:
+        if i < x.key:
             return self.find(x.left, i)
-        else:
-            return self.find(x.right, i)
+        return self.find(x.right, i)
 
-    # CLRS textbook RB-INSERT-FIXUP pseudocode
-    # page: 281
-    def insert(self, i):
+    def insert(self, i: int) -> int:
+        """
+        Inserts a new key into the Red-Black Tree.
 
+        @param i: The key value to insert.
+        @return: The inserted key value.
+        """
         if self.NIL != self.find(self.T, i):
             return 0
 
@@ -67,28 +106,32 @@ class RedBlackTree:
         x = self.T
         while x != self.NIL:
             y = x
-            y.size = y.size + 1    # CLRS Dynamic Order Statistics : "..increment size[x] for each node on the path traversed from the root down toward the leaves.."
+            y.size += 1  # Increment size of each traversed node
             if z.key < x.key:
                 x = x.left
             else:
                 x = x.right
+
         z.parent = y
         if y == self.NIL:
             self.T = z
+        elif z.key < y.key:
+            y.left = z
         else:
-            if z.key < y.key:
-                y.left = z
-            else:
-                y.right = z
+            y.right = z
+
         z.left = z.right = self.NIL
         z.color = COLOR.RED
         self.insert_fixup(z)
 
         return i
 
-    # CLRS textbook RB-INSERT pseudocode
-    # page: 280
-    def insert_fixup(self, z):
+    def insert_fixup(self, z: Node):
+        """
+        Restores Red-Black Tree properties after insertion.
+
+        @param z: The newly inserted node.
+        """
         while z.parent != self.NIL and z.parent.color == COLOR.RED:
             if z.parent == z.parent.parent.left:
                 y = z.parent.parent.right
@@ -120,9 +163,35 @@ class RedBlackTree:
                     self.left_rotate(z.parent.parent)
         self.T.color = COLOR.BLACK
 
-    # CLRS textbook RIGHT-ROTATE pseudocode
-    # page: 278 ".. The code for RIGHT-ROTATE is symmetric..."
-    def right_rotate(self, x):
+    def left_rotate(self, x: Node):
+        """
+        Performs a left rotation around node x.
+
+        @param x: The node to rotate around.
+        """
+        y = x.right
+        x.right = y.left
+        if y.left != self.NIL:
+            y.left.parent = x
+        y.parent = x.parent
+        if x.parent == self.NIL:
+            self.T = y
+        elif x == x.parent.left:
+            x.parent.left = y
+        else:
+            x.parent.right = y
+        y.left = x
+        x.parent = y
+
+        y.size = x.size
+        x.size = x.left.size + x.right.size + 1
+
+    def right_rotate(self, x: Node):
+        """
+        Performs a right rotation around node x.
+
+        @param x: The node to rotate around.
+        """
         y = x.left
         x.left = y.right
         if y.right != self.NIL:
@@ -137,74 +206,24 @@ class RedBlackTree:
         y.right = x
         x.parent = y
 
-        # CLRS Dynamic Order Statistics
-        # page: 306    "size[x] = size[left[x]] + size[right[x]] + 1"
         y.size = x.size
         x.size = x.left.size + x.right.size + 1
 
-    # CLRS textbook LEFT-ROTATE pseudocode
-    # page: 278
-    def left_rotate(self, x):
-        y = x.right                   # set y
-        x.right = y.left              # turn y's left subtree into x's right subtree
-        if y.left != self.NIL:
-            y.left.parent = x
-        y.parent = x.parent           # link x's parent to y
-        if x.parent == self.NIL:
-            self.T = y
-        elif x == x.parent.left:
-            x.parent.left = y
-        else:
-            x.parent.right = y
-        y.left = x                   # put x on y's left
-        x.parent = y
+    def delete(self, i: int) -> int:
+        """
+        Deletes a node with key i from the Red-Black Tree.
 
-        # CLRS Dynamic Order Statistics
-        # page: 306    "size[x] = size[left[x]] + size[right[x]] + 1"
-        y.size = x.size
-        x.size = x.left.size + x.right.size + 1
-
-    # CLRS textbook TREE-MINIMUM pseudocode
-    # page: 258
-    def tree_minimum(self, x):
-        while x.left != self.NIL:
-            x = x.left
-        return x
-
-    # CLRS textbook TREE-SUCCESSOR pseudocode
-    # page: 259
-    def tree_successor(self, x):
-        if x.right != self.NIL:
-            return self.tree_minimum(x.right)
-        y = x.parent
-        while y != self.NIL and x == y.right:
-            x = y
-            y = y.parent
-        return y
-
-    # CLRS textbook RB-DELETE pseudocode
-    # page: 288
-    def delete(self, i):
-
+        @param i: The key value to delete.
+        @return: The deleted key value, or 0 if not found.
+        """
         z = self.find(self.T, i)
-
         if z == self.NIL:
             return 0
 
-        y = None
-
-        if z.left == self.NIL or z.right == self.NIL:
-            y = z
-        else:
-            y = self.tree_successor(z)
-
-        if y.left != self.NIL:
-            x = y.left
-        else:
-            x = y.right
+        y = z if z.left == self.NIL or z.right == self.NIL else self.tree_successor(z)
+        x = y.left if y.left != self.NIL else y.right
 
         x.parent = y.parent
-
         if y.parent == self.NIL:
             self.T = x
         elif y == y.parent.left:
@@ -215,11 +234,9 @@ class RedBlackTree:
         if y != z:
             z.key = y.key
 
-        # CLRS Dynamic Order Statistics
-        # page: 307 "...traverse a path from node y up to the root, decrementing the size field of each node on the path.."
         backprop = y.parent
         while backprop != self.NIL:
-            backprop.size = backprop.size - 1
+            backprop.size -= 1
             backprop = backprop.parent
 
         if y.color == COLOR.BLACK:
@@ -227,58 +244,17 @@ class RedBlackTree:
 
         return i
 
-    # CLRS textbook RB-DELETE-FIXUP pseudocode
-    # page: 289
-    def delete_fixup(self, x):
-        while x != self.T and x.color == COLOR.BLACK:
-            if x == x.parent.left:
-                w = x.parent.right
-                if w.color == COLOR.RED:
-                    w.color = COLOR.BLACK                       # case 1
-                    x.parent.color = COLOR.RED                  # case 1
-                    self.left_rotate(x.parent)                  # case 1
-                    w = x.parent.right                          # case 1
-                if w.left.color == COLOR.BLACK and w.right.color == COLOR.BLACK:
-                    w.color = COLOR.RED                         # case 2
-                    x = x.parent                                # case 2
-                else:
-                    if w.right.color == COLOR.BLACK:
-                        w.left.color = COLOR.BLACK              # case 3
-                        w.color = COLOR.RED                     # case 3
-                        self.right_rotate(w)                    # case 3
-                        w = x.parent.right                      # case 3
-                    w.color = x.parent.color                    # case 4
-                    x.parent.color = COLOR.BLACK                # case 4
-                    w.right.color = COLOR.BLACK                 # case 4
-                    self.left_rotate(x.parent)                  # case 4
-                    x = self.T                                  # case 4
-            else:
-                w = x.parent.left
-                if w.color == COLOR.RED:
-                    w.color = COLOR.BLACK                       # case 1
-                    x.parent.color = COLOR.RED                  # case 1
-                    self.right_rotate(x.parent)                 # case 1
-                    w = x.parent.left                           # case 1
-                if w.right.color == COLOR.BLACK and w.left.color == COLOR.BLACK:
-                    w.color = COLOR.RED                         # case 2
-                    x = x.parent                                # case 2
-                else:
-                    if w.left.color == COLOR.BLACK:
-                        w.right.color = COLOR.BLACK             # case 3
-                        w.color = COLOR.RED                     # case 3
-                        self.left_rotate(w)                     # case 3
-                        w = x.parent.left                       # case 3
-                    w.color = x.parent.color                    # case 4
-                    x.parent.color = COLOR.BLACK                # case 4
-                    w.left.color = COLOR.BLACK                  # case 4
-                    self.right_rotate(x.parent)                 # case 4
-                    x = self.T                                  # case 4
-        x.color = COLOR.BLACK
-
-    def size(self):
+    def size(self) -> int:
+        """Returns the size of the tree (number of elements)."""
         return self.T.size
-    
-    def count_smaller_than(self, i):
+
+    def count_smaller_than(self, i: int) -> int:
+        """
+        Counts the number of elements in the tree smaller than i.
+
+        @param i: The key value to compare.
+        @return: The count of elements smaller than i.
+        """
         x = self.T
         count = 0
         while x != self.NIL:
@@ -288,6 +264,6 @@ class RedBlackTree:
                 count += x.left.size + 1
                 break
             else:
-                count += x.left.size + 1
+                count += x.left.size + 1 # TODO: isn't that suppose to be `x.right`?
                 x = x.right
         return count
