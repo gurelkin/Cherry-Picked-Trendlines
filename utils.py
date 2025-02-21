@@ -12,12 +12,10 @@ def rectangular_region(data: pd.DataFrame, bounds: Dict[str, Tuple[float, float]
     @return: A subset of the dataset where each column value falls within the specified bounds.
 
     @example:
-    ```python
-    data = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
-    rectangular_region(data, {'A': (1, 2), 'B': (5, 10)})
-    >>>    A  B  C
-        1  2  5  8
-    ```
+    >>> data = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
+    >>> rectangular_region(data, {'A': (1, 2), 'B': (5, 10)})
+    A  B  C
+    1  2  5  8
     """
     return data.copy().query(
         ' and '.join(f'{col} >= {low} and {col} <= {high}'
@@ -34,13 +32,11 @@ def circular_region(data: pd.DataFrame, centers_radii: Dict[str, Tuple[float, fl
     @return: A subset of the dataset where each column value falls within the specified circular boundary.
 
     @example:
-    ```python
-    data = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
-    circular_region(data, {'A': (1, 1), 'B': (6, 2)})
-    >>>    A  B  C
-        0  1  4  7
-        1  2  5  8
-    ```
+    >>> data = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
+    >>> circular_region(data, {'A': (1, 1), 'B': (6, 2)})
+    A  B  C
+    0  1  4  7
+    1  2  5  8
     """
     return data.copy().query(
         ' and '.join(f'({col} - {center}) ** 2 <= {radius ** 2}'
@@ -62,14 +58,12 @@ def validate_region(
     @return: A subset of the region that satisfies the constraints.
 
     @example:
-    ```python
-    data = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
-    x1 = pd.Series({'A': 11, 'B': 12, 'C': 13})
-    validate_region(x1, data, lambda x1, x2: x1.A % 2 == x2.A % 2)
-    >>>    A  B  C
-        0  1  4  7
-        2  3  6  9
-    ```
+    >>> data = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
+    >>> x = pd.Series({'A': 11, 'B': 12, 'C': 13})
+    >>> validate_region(x, data, lambda x1, x2: x1.A % 2 == x2.A % 2)
+    A  B  C
+    0  1  4  7
+    2  3  6  9
     """
     valid_region = region.copy()
     for idx, x2 in region.iterrows():

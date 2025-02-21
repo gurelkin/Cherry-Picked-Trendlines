@@ -24,7 +24,6 @@ def baseline_unconstrained(
     @return: The computed support as a float.
 
     Example:
-    ```python
     >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 6, 7, 8]})
     >>> left = rectangular_region(data, {'A': (2, 4)})
     >>> right = rectangular_region(data, {'B': (5, 7)})
