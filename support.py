@@ -95,8 +95,8 @@ def baseline_constrained(
     >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
     >>> left = rectangular_region(data, {'A': (2, 4)})
     >>> right = rectangular_region(data, {'B': (5, 7)})
-    >>> constraints = lambda x1, x2: x1.B == x2.B
-    >>> baseline_constrained(left, right, lambda x: x.A, (-1, 1), constraints)
+    >>> constraints_ = lambda x1_, x2_: x1_.B == x2_.B
+    >>> baseline_constrained(left, right, lambda x: x.A, (-1, 1), constraints_)
     0.5
     """
     lower, upper = statement
@@ -131,8 +131,8 @@ def exact_constrained(
     >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
     >>> left = rectangular_region(data, {'A': (2, 4)})
     >>> right = rectangular_region(data, {'B': (5, 7)})
-    >>> constraints = lambda x1, x2: x1.B == x2.B
-    >>> exact_constrained(left, right, lambda x: x.A, (-1, 1), constraints)
+    >>> constraints_ = lambda x1_, x2_: x1_.B == x2_.B
+    >>> exact_constrained(left, right, lambda x: x.A, (-1, 1), constraints_)
     0.5
     """
     lower, upper = statement
@@ -183,8 +183,8 @@ def pair_sampling(
     >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
     >>> left = rectangular_region(data, {'A': (2, 4)})
     >>> right = rectangular_region(data, {'B': (5, 7)})
-    >>> constraints = lambda x1, x2: x1.B == x2.B
-    >>> pair_sampling(data, left, right, lambda x: x.A, (-1, 1), constraints, 0.95)
+    >>> constraints_ = lambda x1_, x2_: x1_.B == x2_.B
+    >>> pair_sampling(data, left, right, lambda x: x.A, (-1, 1), constraints_, 0.95)
     (0.5, 0.015...)
     """
     lower, upper = statement
@@ -260,7 +260,7 @@ def tightest_statement(
     >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
     >>> left = rectangular_region(data, {'A': (2, 4)})
     >>> right = rectangular_region(data, {'B': (5, 7)})
-    >>> tightest_statement(left, right, lambda x: x.A, 0.9, lambda x1, x2: x1.B == x2.B)
+    >>> tightest_statement(left, right, lambda x: x.A, 0.9, lambda x1_, x2_: x1_.B == x2_.B)
     (-1, 1)
     """
     if constraints is None:
@@ -308,7 +308,7 @@ def most_supported_statement(
     >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
     >>> left = rectangular_region(data, {'A': (1, 2)})
     >>> right = rectangular_region(data, {'B': (5, 7)})
-    >>> most_supported_statement(left, right, lambda x: x.A, 2, lambda x1, x2: x1.B == x2.B)
+    >>> most_supported_statement(left, right, lambda x: x.A, 2, lambda x1_, x2_: x1_.B == x2_.B)
     ((-1.0, 1.0), 0.75)
     """
     if constraints is None:
