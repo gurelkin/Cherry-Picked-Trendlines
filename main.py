@@ -25,7 +25,7 @@ def example_usage():
     s3 = support.baseline_constrained(left, right, lambda x: x.A, statement, constraints)
     s4 = support.exact_constrained(left, right, lambda x: x.A, statement, constraints)
 
-    s5 = support.pair_sampling(data, left, right, lambda x: x.A, statement, constraints, 1)
+    s5 = support.pair_sampling(data, left, right, lambda x: x.A, statement, constraints)
     s6 = support.point_sampling(data, left, right, lambda x: x.A, statement)
 
     ts = support.tightest_statement(left, right, lambda x: x.A, 0.34, constraints)
@@ -35,8 +35,8 @@ def example_usage():
     print(f'Exact Unconstrained: {s2}')
     print(f'Baseline Constrained: {s3}')
     print(f'Exact Constrained: {s4}')
-    print(f'Pair Sampling: {s5}')
-    print(f'Point Sampling: {s6}')
+    print(f'Pair Sampling Constrained: {s5}')
+    print(f'Point Sampling Unconstrained: {s6}')
     print(f'Tightest Statement: {ts}')
     print(f'Most Supported Statement: {mss}')
 
@@ -47,9 +47,9 @@ def beer_sheva_temps():
 
     f_x = lambda x: x.temp
     statement = (0, math.inf)
-    constraints = lambda x1, x2: True
     winter = rectangular_region(data, {'datetime': ('01/01/2023', '03/31/2023')})
     summer = rectangular_region(data, {'datetime': ('06/01/2023', '08/31/2023')})
+    constraints = lambda x1, x2: True
 
     s1 = support.baseline_unconstrained(summer, winter, f_x, statement)
     s2 = support.exact_unconstrained(summer, winter, f_x, statement)
@@ -57,7 +57,7 @@ def beer_sheva_temps():
     s3 = support.baseline_constrained(summer, winter, f_x, statement, constraints)
     s4 = support.exact_constrained(summer, winter, f_x, statement, constraints)
 
-    s5 = support.pair_sampling(data, summer, winter, f_x, statement, constraints, 1)
+    s5 = support.pair_sampling(data, summer, winter, f_x, statement, constraints)
     s6 = support.point_sampling(data, summer, winter, f_x, statement)
 
     ts = support.tightest_statement(summer, winter, f_x, 0.95, constraints)
@@ -68,10 +68,10 @@ def beer_sheva_temps():
     print(f'Exact Unconstrained: {s2 * 100:.2f}%')
     print(f'Baseline Constrained: {s3 * 100:.2f}%')
     print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
-    print(f'Point Sampling: {s6 * 100:.2f}%')
-    print(f'Tightest Statement (for 15 degree difference): {ts}')
-    print(f'Most Supported Statement: Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s5 * 100:.2f}%')
+    print(f'Point Sampling Unconstrained: {s6 * 100:.2f}%')
+    print(f'Tightest Statement (at least 95% support): {ts}')
+    print(f'Most Supported Statement (for 15 degree difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
 
 def dead_sea_level():
@@ -80,9 +80,9 @@ def dead_sea_level():
 
     f_x = lambda x: x.SeaLevel
     statement = (0, math.inf)
-    constraints = lambda x1, x2: True
     before_1991 = rectangular_region(data, {'Date': ('01/01/1900', '12/31/1991')})
     after_1991 = rectangular_region(data, {'Date': ('01/01/1992', '12/31/2025')})
+    constraints = lambda x1, x2: True
 
     s1 = support.baseline_unconstrained(after_1991, before_1991, f_x, statement)
     s2 = support.exact_unconstrained(after_1991, before_1991, f_x, statement)
@@ -90,7 +90,7 @@ def dead_sea_level():
     s3 = support.baseline_constrained(after_1991, before_1991, f_x, statement, constraints)
     s4 = support.exact_constrained(after_1991, before_1991, f_x, statement, constraints)
 
-    s5 = support.pair_sampling(data, after_1991, before_1991, f_x, statement, constraints, 1)
+    s5 = support.pair_sampling(data, after_1991, before_1991, f_x, statement, constraints)
     s6 = support.point_sampling(data, after_1991, before_1991, f_x, statement)
 
     ts = support.tightest_statement(after_1991, before_1991, f_x, 0.95, constraints)
@@ -101,13 +101,40 @@ def dead_sea_level():
     print(f'Exact Unconstrained: {s2 * 100:.2f}%')
     print(f'Baseline Constrained: {s3 * 100:.2f}%')
     print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
-    print(f'Point Sampling: {s6 * 100:.2f}%')
-    print(f'Tightest Statement (for 3 meters difference): {ts}')
-    print(f'Most Supported Statement: Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s5 * 100:.2f}%')
+    print(f'Point Sampling Unconstrained: {s6 * 100:.2f}%')
+    print(f'Tightest Statement (at least 95% support): {ts}')
+    print(f'Most Supported Statement (for 3 meters difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+
+
+def african_gdp():
+    data = pd.read_csv('data/africa_gdp.csv')
+
+    f_x = lambda x: x.GDP
+    statement = (0, math.inf)
+    gdp_2008 = rectangular_region(data, {'Year': (2008, 2008)})
+    gdp_2009 = rectangular_region(data, {'Year': (2009, 2009)})
+    constraints = lambda x1, x2: x1.Country == x2.Country
+
+    s3 = support.baseline_constrained(gdp_2008, gdp_2009, f_x, statement, constraints)
+    s4 = support.exact_constrained(gdp_2008, gdp_2009, f_x, statement, constraints)
+
+    s5 = support.pair_sampling(data, gdp_2009, gdp_2009, f_x, statement, constraints)
+
+    ts = support.tightest_statement(gdp_2008, gdp_2009, f_x, 0.95, constraints)
+    mss = support.most_supported_statement(gdp_2008, gdp_2009, f_x, 100_000_000, constraints)
+
+    print('Statement: African countries did not suffer from the great recession of 2008, '
+          'i.e. their GDP did not decreased from 2008 to 2009')
+    print(f'Baseline Constrained: {s3 * 100:.2f}%')
+    print(f'Exact Constrained: {s4 * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s5 * 100:.2f}%')
+    print(f'Tightest Statement (at least 95% support): {ts}')
+    print(f'Most Supported Statement(for 100M$ difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
 
 if __name__ == '__main__':
     # example_usage()
-    beer_sheva_temps()
-    dead_sea_level()
+    # beer_sheva_temps()
+    # dead_sea_level()
+    african_gdp()
