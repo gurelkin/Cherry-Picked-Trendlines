@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Callable, Union, Any
 import pandas as pd
 
 
-def rectangular_region(data: pd.DataFrame, bounds: Dict[str, Tuple[float, float]]) -> pd.DataFrame:
+def rectangular_region(data: pd.DataFrame, bounds: Dict[str, Tuple[Any, Any]]) -> pd.DataFrame:
     """
     Filters the dataset to return records where each specified column value is within the given bounds.
 
@@ -17,9 +17,12 @@ def rectangular_region(data: pd.DataFrame, bounds: Dict[str, Tuple[float, float]
     A  B  C
     1  2  5  8
     """
-    return data.copy().query(
-        ' and '.join(f'{col} >= {low} and {col} <= {high}'
-                     for col, (low, high) in bounds.items())
+    return data.query(
+        ' and '.join(
+            f'{col} >= {low} and {col} <= {high}' if isinstance(low, int | float)
+            else f"{col} >= '{low}' and {col} <= '{high}'"  # datetime support
+            for col, (low, high) in bounds.items()
+        )
     )
 
 
