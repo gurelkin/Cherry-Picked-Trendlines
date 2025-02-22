@@ -380,7 +380,7 @@ class RedBlackTree:
         Counts the number of elements in the tree smaller or equal than k.
 
         @param k: The key value to compare.
-        @return: The count of elements smaller than k.
+        @return: The count of elements smaller or equal than k.
         """
         x = self.T
         count = 0
