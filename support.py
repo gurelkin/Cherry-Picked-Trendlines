@@ -197,7 +197,7 @@ def pair_sampling(
             satisfied += 1
     support = satisfied / len(dataset)
     error = norm.ppf(1 - confidence / 2) * np.sqrt(support * (1 - support) / len(dataset))
-    return support, error
+    return support, float(error)
 
 
 def point_sampling(
@@ -283,7 +283,7 @@ def tightest_statement(
         if range_width < min_range_width:
             min_range_width = range_width
             best_lower, best_upper = lower, upper
-    return best_lower, best_upper
+    return float(best_lower), float(best_upper)
 
 
 def most_supported_statement(
@@ -331,4 +331,4 @@ def most_supported_statement(
         if support > max_support:
             max_support = support
             best_lower, best_upper = lower, differences[high_idx]
-    return (best_lower, best_upper), (max_support / len(differences))
+    return (float(best_lower), float(best_upper)), (float(max_support) / len(differences))
