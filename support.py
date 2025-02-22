@@ -267,11 +267,11 @@ def tightest_statement(
     (-1, 1)
     """
     if constraints is None:
-        differences = np.concatenate([[quantifier(x2) - quantifier(x1)
+        differences = np.concatenate([[quantifier(x1) - quantifier(x2)
                                        for x1 in left_region.itertuples(index=False)]
                                       for x2 in right_region.itertuples(index=False)])
     else:
-        differences = np.concatenate([[quantifier(x2) - quantifier(x1)
+        differences = np.concatenate([[quantifier(x1) - quantifier(x2)
                                        for x1 in validate_region(x2, left_region, constraints).itertuples(index=False)]
                                       for x2 in right_region.itertuples(index=False)])
 
@@ -315,11 +315,11 @@ def most_supported_statement(
     ((-1.0, 1.0), 0.75)
     """
     if constraints is None:
-        differences = np.concatenate([[quantifier(x2) - quantifier(x1)
+        differences = np.concatenate([[quantifier(x1) - quantifier(x2)
                                        for x1 in left_region.itertuples(index=False)]
                                       for x2 in right_region.itertuples(index=False)])
     else:
-        differences = np.concatenate([[quantifier(x2) - quantifier(x1)
+        differences = np.concatenate([[quantifier(x1) - quantifier(x2)
                                        for x1 in validate_region(x2, left_region, constraints).itertuples(index=False)]
                                       for x2 in right_region.itertuples(index=False)])
 

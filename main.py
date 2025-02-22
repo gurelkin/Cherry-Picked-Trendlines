@@ -61,7 +61,7 @@ def beer_sheva_temps():
     s6 = support.point_sampling(data, summer, winter, f_x, statement)
 
     ts = support.tightest_statement(summer, winter, f_x, 0.95, constraints)
-    mss = support.most_supported_statement(summer, winter, f_x, 10, constraints)
+    mss = support.most_supported_statement(summer, winter, f_x, 15, constraints)
 
     print('Statement: In Beer-Sheva the summer is hotter than the winter')
     print(f'Baseline Unconstrained: {s1 * 100:.2f}%')
@@ -70,7 +70,7 @@ def beer_sheva_temps():
     print(f'Exact Constrained: {s4 * 100:.2f}%')
     print(f'Pair Sampling: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
     print(f'Point Sampling: {s6 * 100:.2f}%')
-    print(f'Tightest Statement: {ts}')
+    print(f'Tightest Statement (for 15 degree difference): {ts}')
     print(f'Most Supported Statement: Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
 
