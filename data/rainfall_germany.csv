@@ -1,4 +1,4 @@
-City,Latitude,Longitude,Month,Year,Rainfall (mm),Elevation (m),Climate_Type,Temperature (°C),Humidity (%)
+City,Latitude,Longitude,Month,Year,Rainfall,Elevation (m),Climate_Type,Temperature (°C),Humidity (%)
 Berlin,52.52,13.405,1,2015,71.56,34,Oceanic,19.6,72
 Berlin,52.52,13.405,2,2015,129.56,34,Oceanic,31.4,88
 Berlin,52.52,13.405,3,2015,24.58,34,Oceanic,15.4,61

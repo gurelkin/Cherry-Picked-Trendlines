@@ -34,7 +34,7 @@ def baseline_unconstrained(
     satisfied = 0
     for x1 in left_region.itertuples(index=False):
         for x2 in right_region.itertuples(index=False):
-            if lower < quantifier(x1) - quantifier(x2) < upper:  # TODO: isn't that suppose to be reversed? I.e. x2-x1?
+            if lower < quantifier(x1) - quantifier(x2) < upper:
                 satisfied += 1
     return satisfied / (len(left_region) * len(right_region))
 
@@ -164,8 +164,9 @@ def pair_sampling(
         right_region: pd.DataFrame,
         quantifier: Callable[[Tuple[Any, ...]], float],
         statement: Tuple[float, float],
-        constraints: Callable[[pd.Series, pd.Series], bool]
-) -> float:
+        constraints: Callable[[pd.Series, pd.Series], bool],
+        confidence: float
+) -> Tuple[float, float]:
     """
     Estimates the constrained support via Monte Carlo pair sampling.
 
@@ -175,7 +176,8 @@ def pair_sampling(
     @param quantifier: A function that extracts a numerical value from a record.
     @param statement: A tuple representing the lower and upper bounds for comparison.
     @param constraints: A function that returns True if the pair satisfies the given constraints.
-    @return: A tuple containing the estimated support.
+    @param confidence: The confidence level for the error estimation.
+    @return: A tuple containing the estimated support and its error margin.
 
     @example:
     >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 5, 6, 6]})
@@ -197,7 +199,8 @@ def pair_sampling(
         if lower < quantifier(x1) - quantifier(x2) < upper:
             satisfied += 1
     support = satisfied / len(dataset)
-    return support
+    error = norm.ppf(1 - confidence / 2) * np.sqrt(support * (1 - support) / len(dataset))
+    return support, float(error)
 
 
 def point_sampling(

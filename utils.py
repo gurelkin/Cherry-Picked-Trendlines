@@ -20,7 +20,7 @@ def rectangular_region(data: pd.DataFrame, bounds: Dict[str, Tuple[Any, Any]]) -
     return data.query(
         ' and '.join(
             f'{col} >= {low} and {col} <= {high}' if isinstance(low, int | float)
-            else f"{col} >= '{low}' and {col} <= '{high}'"  # datetime support
+            else f"{col} >= '{low}' and {col} <= '{high}'"  # datetime/str support
             for col, (low, high) in bounds.items()
         )
     )

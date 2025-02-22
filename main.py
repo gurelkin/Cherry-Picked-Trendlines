@@ -25,7 +25,7 @@ def example_usage():
     s3 = support.baseline_constrained(left, right, lambda x: x.A, statement, constraints)
     s4 = support.exact_constrained(left, right, lambda x: x.A, statement, constraints)
 
-    s5 = support.pair_sampling(data, left, right, lambda x: x.A, statement, constraints)
+    s5 = support.pair_sampling(data, left, right, lambda x: x.A, statement, constraints, 0.95)
     s6 = support.point_sampling(data, left, right, lambda x: x.A, statement)
 
     ts = support.tightest_statement(left, right, lambda x: x.A, 0.34, constraints)
@@ -57,7 +57,7 @@ def beer_sheva_temps():
     s3 = support.baseline_constrained(summer, winter, f_x, statement, constraints)
     s4 = support.exact_constrained(summer, winter, f_x, statement, constraints)
 
-    s5 = support.pair_sampling(data, summer, winter, f_x, statement, constraints)
+    s5 = support.pair_sampling(data, summer, winter, f_x, statement, constraints, 0.95)
     s6 = support.point_sampling(data, summer, winter, f_x, statement)
 
     ts = support.tightest_statement(summer, winter, f_x, 0.95, constraints)
@@ -68,7 +68,7 @@ def beer_sheva_temps():
     print(f'Exact Unconstrained: {s2 * 100:.2f}%')
     print(f'Baseline Constrained: {s3 * 100:.2f}%')
     print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling Constrained: Support={s5 * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
     print(f'Point Sampling Unconstrained: {s6 * 100:.2f}%')
     print(f'Tightest Statement (at least 95% support): {ts}')
     print(f'Most Supported Statement (for 15 degree difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
@@ -90,7 +90,7 @@ def dead_sea_level():
     s3 = support.baseline_constrained(after_1991, before_1991, f_x, statement, constraints)
     s4 = support.exact_constrained(after_1991, before_1991, f_x, statement, constraints)
 
-    s5 = support.pair_sampling(data, after_1991, before_1991, f_x, statement, constraints)
+    s5 = support.pair_sampling(data, after_1991, before_1991, f_x, statement, constraints, 0.95)
     s6 = support.point_sampling(data, after_1991, before_1991, f_x, statement)
 
     ts = support.tightest_statement(after_1991, before_1991, f_x, 0.95, constraints)
@@ -101,7 +101,7 @@ def dead_sea_level():
     print(f'Exact Unconstrained: {s2 * 100:.2f}%')
     print(f'Baseline Constrained: {s3 * 100:.2f}%')
     print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling Constrained: Support={s5 * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
     print(f'Point Sampling Unconstrained: {s6 * 100:.2f}%')
     print(f'Tightest Statement (at least 95% support): {ts}')
     print(f'Most Supported Statement (for 3 meters difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
@@ -119,22 +119,67 @@ def african_gdp():
     s3 = support.baseline_constrained(gdp_2008, gdp_2009, f_x, statement, constraints)
     s4 = support.exact_constrained(gdp_2008, gdp_2009, f_x, statement, constraints)
 
-    s5 = support.pair_sampling(data, gdp_2009, gdp_2009, f_x, statement, constraints)
+    s5 = support.pair_sampling(data, gdp_2008, gdp_2009, f_x, statement, constraints, 0.95)
 
     ts = support.tightest_statement(gdp_2008, gdp_2009, f_x, 0.95, constraints)
-    mss = support.most_supported_statement(gdp_2008, gdp_2009, f_x, 100_000_000, constraints)
+    mss = support.most_supported_statement(gdp_2008, gdp_2009, f_x, 1_000_000_000, constraints)
 
     print('Statement: African countries did not suffer from the great recession of 2008, '
           'i.e. their GDP did not decreased from 2008 to 2009')
     print(f'Baseline Constrained: {s3 * 100:.2f}%')
     print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling Constrained: Support={s5 * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
     print(f'Tightest Statement (at least 95% support): {ts}')
-    print(f'Most Supported Statement(for 100M$ difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+    print(f'Most Supported Statement(for 1B$ difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
+
+def germany_rainfall():
+    data = pd.read_csv('data/rainfall_germany.csv')
+
+    f_x = lambda x: x.Rainfall
+    statement = (-2.5, 2.5)
+    dusseldorf = rectangular_region(data, {'City': ('Dusseldorf', 'Dusseldorf')})
+    berlin = rectangular_region(data, {'City': ('Berlin', 'Berlin')})
+    constraints = lambda x1, x2: x1.Month == x2.Month and x1.Year == x2.Year
+
+    s3 = support.baseline_constrained(dusseldorf, berlin, f_x, statement, constraints)
+    s4 = support.exact_constrained(dusseldorf, berlin, f_x, statement, constraints)
+
+    s5 = support.pair_sampling(data, dusseldorf, berlin, f_x, statement, constraints, 0.95)
+
+    ts = support.tightest_statement(dusseldorf, berlin, f_x, 0.95, constraints)
+    mss = support.most_supported_statement(dusseldorf, berlin, f_x, 5, constraints)
+
+    print('Statement: Dusseldorf and Berlin has approximately the same rain amount for the same month.'
+          'I.e. for any month, the difference is between -2.5mm to 2.5mm')
+    print(f'Baseline Constrained: {s3 * 100:.2f}%')
+    print(f'Exact Constrained: {s4 * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
+    print(f'Tightest Statement (at least 95% support): {ts}')
+    print(f'Most Supported Statement (for 5mm difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+
+def danish_house():
+    data = pd.read_csv('data/danish_house.csv')
+
+    f_x = lambda x: x.purchase_price
+    statement = (-100_000, 100_000)
+    constraints = lambda x1, x2: x1.city == x2.city and x1.quarter == x2.quarter and x1.no_rooms == x2.no_rooms
+
+    s5 = support.pair_sampling(data, data, data, f_x, statement, constraints, 0.95)
+
+    ts = support.tightest_statement(data, data, f_x, 0.95, constraints)
+    mss = support.most_supported_statement(data, data, f_x, 200_000, constraints)
+
+    print('Statement: All houses in any city with the same amount of rooms, are sold in approximately the same price at that quarter of year.'
+          'I.e. all house purchases with the same year quarter, city and rooms will have price difference of no more than 100K')
+    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
+    print(f'Tightest Statement (at least 95% support): {ts}')
+    print(f'Most Supported Statement (for 200K$ difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
 if __name__ == '__main__':
     # example_usage()
-    # beer_sheva_temps()
-    # dead_sea_level()
+    beer_sheva_temps()
+    dead_sea_level()
     african_gdp()
+    germany_rainfall()
+    danish_house()
