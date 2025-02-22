@@ -1,3 +1,6 @@
+import math
+
+import pandas as pd
 from pandas import DataFrame
 
 import support
@@ -38,5 +41,39 @@ def example_usage():
     print(f'Most Supported Statement: {mss}')
 
 
+def beer_sheva_temps():
+    data = pd.read_csv('data/beer-sheva_temps.csv')
+    data['datetime'] = pd.to_datetime(data['datetime'], format='%d/%m/%Y')
+
+    f_x = lambda x: x.temp
+    statement = (0, math.inf)
+    constraints = lambda x1, x2: True
+    winter = rectangular_region(data, {'datetime': ('01/01/2023', '03/31/2023')})
+    summer = rectangular_region(data, {'datetime': ('06/01/2023', '08/31/2023')})
+
+    s1 = support.baseline_unconstrained(summer, winter, f_x, statement)
+    s2 = support.exact_unconstrained(summer, winter, f_x, statement)
+
+    s3 = support.baseline_constrained(summer, winter, f_x, statement, constraints)
+    s4 = support.exact_constrained(summer, winter, f_x, statement, constraints)
+
+    s5 = support.pair_sampling(data, summer, winter, f_x, statement, constraints, 1)
+    s6 = support.point_sampling(data, summer, winter, f_x, statement)
+
+    ts = support.tightest_statement(summer, winter, f_x, 0.95, constraints)
+    mss = support.most_supported_statement(summer, winter, f_x, 10, constraints)
+
+    print('Statement: In Beer-Sheva the summer is hotter than the winter')
+    print(f'Baseline Unconstrained: {s1 * 100:.2f}%')
+    print(f'Exact Unconstrained: {s2 * 100:.2f}%')
+    print(f'Baseline Constrained: {s3 * 100:.2f}%')
+    print(f'Exact Constrained: {s4 * 100:.2f}%')
+    print(f'Pair Sampling: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
+    print(f'Point Sampling: {s6 * 100:.2f}%')
+    print(f'Tightest Statement: {ts}')
+    print(f'Most Supported Statement: Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+
+
 if __name__ == '__main__':
-    example_usage()
+    # example_usage()
+    beer_sheva_temps()
