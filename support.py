@@ -66,9 +66,9 @@ def exact_unconstrained(
     cumulative.sort()
     satisfied = 0
     for x2 in right_region.itertuples(index=False):
-        fx2 = quantifier(x2)
-        low_idx = cumulative.searchsorted(fx2 + lower, side='right')
-        high_idx = cumulative.searchsorted(fx2 + upper, side='left')
+        f_x2 = quantifier(x2)
+        low_idx = cumulative.searchsorted(f_x2 + lower, side='right')  # binary search
+        high_idx = cumulative.searchsorted(f_x2 + upper, side='left')  # # binary search
         if low_idx < high_idx:
             satisfied += (high_idx - low_idx)
     return satisfied / (len(left_region) * len(right_region))
@@ -150,9 +150,9 @@ def exact_constrained(
             rbt.insert(quantifier(x1))
         previous_valid_left_region = current_valid_left_region
         total += rbt.size()
-        fx2 = quantifier(x2)
-        low_idx = rbt.count_smaller_than(fx2 + lower)
-        high_idx = rbt.count_smaller_than(fx2 + upper)
+        f_x2 = quantifier(x2)
+        low_idx = rbt.count_smaller_equal_than(f_x2 + lower)
+        high_idx = rbt.count_smaller_than(f_x2 + upper)
         if low_idx < high_idx:
             satisfied += (high_idx - low_idx)
     return satisfied / total if total > 0 else 0
@@ -231,9 +231,9 @@ def point_sampling(
     cumulative = np.array([quantifier(x1) for x1 in left_samples])
     cumulative.sort()
     for x2 in right_samples:
-        fx2 = quantifier(x2)
-        low_idx = cumulative.searchsorted(fx2 + lower, side='right')
-        high_idx = cumulative.searchsorted(fx2 + upper, side='left')
+        f_x2 = quantifier(x2)
+        low_idx = cumulative.searchsorted(f_x2 + lower, side='right')
+        high_idx = cumulative.searchsorted(f_x2 + upper, side='left')
         if low_idx < high_idx:
             satisfied += (high_idx - low_idx)
     return satisfied / (len(dataset) ** 2)

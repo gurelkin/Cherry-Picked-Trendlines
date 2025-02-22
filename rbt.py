@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 
 class COLOR(str, Enum):
@@ -54,6 +54,14 @@ class RedBlackTree:
         Returns the size of the Red-Black Tree, i.e. nodes amount.
         """
         return self.T.size
+
+    def in_order(self) -> List[float]:
+        def recurse(x: Node):
+            if x == self.NIL:
+                return []
+            return recurse(x.left) + [x.key] + recurse(x.right)
+
+        return recurse(self.T)
 
     def select(self, x: Node, i: int) -> Node:
         """
@@ -350,6 +358,26 @@ class RedBlackTree:
     def count_smaller_than(self, k: float) -> int:
         """
         Counts the number of elements in the tree smaller than k.
+
+        @param k: The key value to compare.
+        @return: The count of elements smaller than k.
+        """
+        x = self.T
+        count = 0
+        while x != self.NIL:
+            if k < x.key:
+                x = x.left
+            elif k == x.key:
+                count += x.left.size
+                break
+            else:
+                count += x.left.size + 1
+                x = x.right
+        return count
+
+    def count_smaller_equal_than(self, k: float) -> int:
+        """
+        Counts the number of elements in the tree smaller or equal than k.
 
         @param k: The key value to compare.
         @return: The count of elements smaller than k.
