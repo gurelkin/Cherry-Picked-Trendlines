@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, Callable
+from typing import Dict, Tuple, Callable, Union, Any
 
 import pandas as pd
 
@@ -45,7 +45,7 @@ def circular_region(data: pd.DataFrame, centers_radii: Dict[str, Tuple[float, fl
 
 
 def validate_region(
-        x1: pd.Series,
+        x1: Union[Tuple[Any, ...], pd.Series],
         region: pd.DataFrame,
         constraints: Callable[[pd.Series, pd.Series], bool]
 ) -> pd.DataFrame:

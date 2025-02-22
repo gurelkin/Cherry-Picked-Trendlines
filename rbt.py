@@ -22,7 +22,7 @@ class Node:
 
     def __init__(
             self,
-            key: Optional[Union[int, str]] = None,
+            key: Optional[Union[float, str]] = None,
             color: Optional[str] = None,
             left: Optional["Node"] = None,
             right: Optional["Node"] = None,
@@ -212,14 +212,14 @@ class RedBlackTree:
             y = y.parent
         return y
 
-    def delete(self, i: int) -> int:
+    def delete(self, k: float) -> float:
         """
-        Deletes a node with key i from the Red-Black Tree.
+        Deletes a node with key k from the Red-Black Tree.
 
-        @param i: The key value to delete.
+        @param k: The key value to delete.
         @return: The deleted key value, or 0 if not found.
         """
-        z = self.find(self.T, i)
+        z = self.find(self.T, k)
         if z == self.NIL:
             return 0
 
@@ -242,7 +242,7 @@ class RedBlackTree:
             backprop.size -= 1
             backprop = backprop.parent
 
-        return i
+        return k
 
     def delete_fixup(self, x: Node):
         """
@@ -298,31 +298,31 @@ class RedBlackTree:
                     x = self.T
         x.color = COLOR.BLACK
 
-    def find(self, x: Node, i: int) -> Node:
+    def find(self, x: Node, k: float) -> Node:
         """
-        Searches for a node with key i in the subtree rooted at x.
+        Searches for a node with key k in the subtree rooted at x.
 
         @param x: The root of the subtree to search.
-        @param i: The key value to find.
-        @return: The node with key i, or NIL if not found.
+        @param k: The key value to find.
+        @return: The node with key k, or NIL if not found.
         """
-        if x == self.NIL or x.key == i:
+        if x == self.NIL or x.key == k:
             return x
-        if i < x.key:
-            return self.find(x.left, i)
-        return self.find(x.right, i)
+        if k < x.key:
+            return self.find(x.left, k)
+        return self.find(x.right, k)
 
-    def insert(self, i: int) -> int:
+    def insert(self, k: float) -> float:
         """
-        Inserts a new key into the Red-Black Tree.
+        Inserts a new key k into the Red-Black Tree.
 
-        @param i: The key value to insert.
+        @param k: The key value to insert.
         @return: The inserted key value.
         """
-        if self.NIL != self.find(self.T, i):
+        if self.NIL != self.find(self.T, k):
             return 0
 
-        z = Node(key=i)
+        z = Node(key=k)
         y = self.NIL
         x = self.T
         while x != self.NIL:
@@ -345,21 +345,21 @@ class RedBlackTree:
         z.color = COLOR.RED
         self.insert_fixup(z)
 
-        return i
+        return k
 
-    def count_smaller_than(self, i: int) -> int:
+    def count_smaller_than(self, k: float) -> int:
         """
-        Counts the number of elements in the tree smaller than i.
+        Counts the number of elements in the tree smaller than k.
 
-        @param i: The key value to compare.
-        @return: The count of elements smaller than i.
+        @param k: The key value to compare.
+        @return: The count of elements smaller than k.
         """
         x = self.T
         count = 0
         while x != self.NIL:
-            if i < x.key:
+            if k < x.key:
                 x = x.left
-            elif i == x.key:
+            elif k == x.key:
                 count += x.left.size + 1
                 break
             else:

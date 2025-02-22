@@ -1,4 +1,4 @@
-from typing import Callable, Tuple, Optional
+from typing import Callable, Tuple, Optional, Any
 
 import numpy as np
 import pandas as pd
@@ -11,7 +11,7 @@ from utils import validate_region, rectangular_region
 def baseline_unconstrained(
         left_region: pd.DataFrame,
         right_region: pd.DataFrame,
-        quantifier: Callable[[pd.Series], float],
+        quantifier: Callable[[Tuple[Any, ...]], float],
         statement: Tuple[float, float]
 ) -> float:
     """
@@ -19,11 +19,11 @@ def baseline_unconstrained(
 
     @param left_region: The left region (minuend) of the dataset.
     @param right_region: The right region (subtrahend) of the dataset.
-    @param quantifier: A function that extracts a numerical value from a record.
+    @param quantifier: A function that extracts a numerical value from a record, i.e. f(x) where x is a record.
     @param statement: A tuple representing the lower and upper bounds for comparison.
     @return: The computed support as a float.
 
-    Example:
+    @example:
     >>> data = pd.DataFrame({'A': [1, 2, 3, 4], 'B': [5, 6, 7, 8]})
     >>> left = rectangular_region(data, {'A': (2, 4)})
     >>> right = rectangular_region(data, {'B': (5, 7)})
@@ -34,7 +34,7 @@ def baseline_unconstrained(
     satisfied = 0
     for x1 in left_region.itertuples(index=False):
         for x2 in right_region.itertuples(index=False):
-            if lower < quantifier(x1) - quantifier(x2) < upper:
+            if lower < quantifier(x1) - quantifier(x2) < upper:  # TODO: isn't that suppose to be reversed? I.e. x2-x1?
                 satisfied += 1
     return satisfied / (len(left_region) * len(right_region))
 
@@ -42,7 +42,7 @@ def baseline_unconstrained(
 def exact_unconstrained(
         left_region: pd.DataFrame,
         right_region: pd.DataFrame,
-        quantifier: Callable[[pd.Series], float],
+        quantifier: Callable[[Tuple[Any, ...]], float],
         statement: Tuple[float, float]
 ) -> float:
     """
@@ -77,7 +77,7 @@ def exact_unconstrained(
 def baseline_constrained(
         left_region: pd.DataFrame,
         right_region: pd.DataFrame,
-        quantifier: Callable[[pd.Series], float],
+        quantifier: Callable[[Tuple[Any, ...]], float],
         statement: Tuple[float, float],
         constraints: Callable[[pd.Series, pd.Series], bool]
 ) -> float:
@@ -113,7 +113,7 @@ def baseline_constrained(
 def exact_constrained(
         left_region: pd.DataFrame,
         right_region: pd.DataFrame,
-        quantifier: Callable[[pd.Series], float],
+        quantifier: Callable[[Tuple[Any, ...]], float],
         statement: Tuple[float, float],
         constraints: Callable[[pd.Series, pd.Series], bool]
 ) -> float:
@@ -162,7 +162,7 @@ def pair_sampling(
         dataset: pd.DataFrame,
         left_region: pd.DataFrame,
         right_region: pd.DataFrame,
-        quantifier: Callable[[pd.Series], float],
+        quantifier: Callable[[Tuple[Any, ...]], float],
         statement: Tuple[float, float],
         constraints: Callable[[pd.Series, pd.Series], bool],
         confidence: float
@@ -204,7 +204,7 @@ def point_sampling(
         dataset: pd.DataFrame,
         left_region: pd.DataFrame,
         right_region: pd.DataFrame,
-        quantifier: Callable[[pd.Series], float],
+        quantifier: Callable[[Tuple[Any, ...]], float],
         statement: Tuple[float, float]
 ) -> float:
     """
@@ -242,7 +242,7 @@ def point_sampling(
 def tightest_statement(
         left_region: pd.DataFrame,
         right_region: pd.DataFrame,
-        quantifier: Callable[[pd.Series], float],
+        quantifier: Callable[[Tuple[Any, ...]], float],
         support: float,
         constraints: Optional[Callable[[pd.Series, pd.Series], bool]] = None
 ) -> Tuple[float, float]:
@@ -289,7 +289,7 @@ def tightest_statement(
 def most_supported_statement(
         left_region: pd.DataFrame,
         right_region: pd.DataFrame,
-        quantifier: Callable[[pd.Series], float],
+        quantifier: Callable[[Tuple[Any, ...]], float],
         range_width: float,
         constraints: Optional[Callable[[pd.Series, pd.Series], bool]] = None
 ) -> Tuple[Tuple[float, float], float]:
