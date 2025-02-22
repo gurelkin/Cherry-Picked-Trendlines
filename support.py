@@ -192,6 +192,9 @@ def pair_sampling(
     for _ in range(len(dataset)):
         x2 = right_region.sample(n=1).iloc[0]
         valid_left_region = validate_region(x2, left_region, constraints)
+        if valid_left_region.empty:
+            continue
+
         x1 = valid_left_region.sample(n=1).iloc[0]
         if lower < quantifier(x1) - quantifier(x2) < upper:
             satisfied += 1
@@ -323,7 +326,7 @@ def most_supported_statement(
     differences.sort()
     n_trendlines = len(differences)
     max_support = 0
-    best_lower, best_upper = None, None
+    best_lower, best_upper = 0, 0
     for low_idx in range(n_trendlines):
         lower = differences[low_idx]
         high_idx = np.searchsorted(differences, lower + range_width, side='right') - 1

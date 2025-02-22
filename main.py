@@ -11,19 +11,19 @@ def example_usage():
     # 3   7
     # 4   8
     data = DataFrame({'A': [1, 2, 3, 4], 'B': [5, 6, 7, 8]})
-
+    statement = (0, 2)
+    constraints = lambda x1, x2: x1.A % 2 != x2.A % 2
     left = rectangular_region(data, {'A': (2, 4)})
     right = rectangular_region(data, {'B': (5, 7)})
 
-    s1 = support.baseline_unconstrained(left, right, lambda x: x.A, (0, 2))
-    s2 = support.exact_unconstrained(left, right, lambda x: x.A, (0, 2))
+    s1 = support.baseline_unconstrained(left, right, lambda x: x.A, statement)
+    s2 = support.exact_unconstrained(left, right, lambda x: x.A, statement)
 
-    constraints = lambda x1, x2: True
-    s3 = support.baseline_constrained(left, right, lambda x: x.A, (0, 2), constraints)
-    s4 = support.exact_constrained(left, right, lambda x: x.A, (0, 2), constraints)
+    s3 = support.baseline_constrained(left, right, lambda x: x.A, statement, constraints)
+    s4 = support.exact_constrained(left, right, lambda x: x.A, statement, constraints)
 
-    s5 = support.pair_sampling(data, left, right, lambda x: x.A, (0, 2), constraints, 1)
-    s6 = support.point_sampling(data, left, right, lambda x: x.A, (0, 2))
+    s5 = support.pair_sampling(data, left, right, lambda x: x.A, statement, constraints, 1)
+    s6 = support.point_sampling(data, left, right, lambda x: x.A, statement)
 
     ts = support.tightest_statement(left, right, lambda x: x.A, 0.34, constraints)
     mss = support.most_supported_statement(left, right, lambda x: x.A, 2, constraints)
@@ -36,6 +36,7 @@ def example_usage():
     print(f'Point Sampling: {s6}')
     print(f'Tightest Statement: {ts}')
     print(f'Most Supported Statement: {mss}')
+
 
 if __name__ == '__main__':
     example_usage()
