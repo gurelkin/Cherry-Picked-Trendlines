@@ -45,28 +45,28 @@ def circular_region(data: pd.DataFrame, centers_radii: Dict[str, Tuple[float, fl
 
 
 def validate_region(
-        x1: Union[Tuple[Any, ...], pd.Series],
+        x: Union[Tuple[Any, ...], pd.Series],
         region: pd.DataFrame,
         constraints: Callable[[pd.Series, pd.Series], bool]
 ) -> pd.DataFrame:
     """
     Filters a region to return records that satisfy the constraints with respect to a given record x1.
 
-    @param x1: The reference record to validate against.
+    @param x: The reference record to validate against.
     @param region: The dataset to filter.
     @param constraints: A function that evaluates whether a pair of records satisfies the constraints.
     @return: A subset of the region that satisfies the constraints.
 
     @example:
     >>> data = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
-    >>> x = pd.Series({'A': 11, 'B': 12, 'C': 13})
-    >>> validate_region(x, data, lambda x1_, x2_: x1_.A % 2 == x2_.A % 2)
+    >>> x_ = pd.Series({'A': 11, 'B': 12, 'C': 13})
+    >>> validate_region(x_, data, lambda x1_, x2_: x1_.A % 2 == x2_.A % 2)
     A  B  C
     0  1  4  7
     2  3  6  9
     """
     valid_region = region.copy()
     for idx, x2 in region.iterrows():
-        if not constraints(x1, x2):
+        if not constraints(x, x2):
             valid_region.drop(idx, inplace=True)
     return valid_region
