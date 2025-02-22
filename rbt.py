@@ -49,6 +49,12 @@ class RedBlackTree:
         self.NIL = Node(key="NIL", color=COLOR.BLACK, size=0)
         self.T: Node = self.NIL  # Root of the tree
 
+    def size(self) -> int:
+        """
+        Returns the size of the Red-Black Tree, i.e. nodes amount.
+        """
+        return self.T.size
+
     def select(self, x: Node, i: int) -> Node:
         """
         Returns the i-th smallest element in the subtree rooted at x.
@@ -206,6 +212,38 @@ class RedBlackTree:
             y = y.parent
         return y
 
+    def delete(self, i: int) -> int:
+        """
+        Deletes a node with key i from the Red-Black Tree.
+
+        @param i: The key value to delete.
+        @return: The deleted key value, or 0 if not found.
+        """
+        z = self.find(self.T, i)
+        if z == self.NIL:
+            return 0
+
+        y = z if z.left == self.NIL or z.right == self.NIL else self.tree_successor(z)
+        x = y.left if y.left != self.NIL else y.right
+
+        x.parent = y.parent
+        if y.parent == self.NIL:
+            self.T = x
+        elif y == y.parent.left:
+            y.parent.left = x
+        else:
+            y.parent.right = x
+
+        if y != z:
+            z.key = y.key
+
+        backprop = y.parent
+        while backprop != self.NIL:
+            backprop.size -= 1
+            backprop = backprop.parent
+
+        return i
+
     def delete_fixup(self, x: Node):
         """
         Restores Red-Black Tree properties after deletion.
@@ -259,3 +297,72 @@ class RedBlackTree:
                     self.right_rotate(x.parent)
                     x = self.T
         x.color = COLOR.BLACK
+
+    def find(self, x: Node, i: int) -> Node:
+        """
+        Searches for a node with key i in the subtree rooted at x.
+
+        @param x: The root of the subtree to search.
+        @param i: The key value to find.
+        @return: The node with key i, or NIL if not found.
+        """
+        if x == self.NIL or x.key == i:
+            return x
+        if i < x.key:
+            return self.find(x.left, i)
+        return self.find(x.right, i)
+
+    def insert(self, i: int) -> int:
+        """
+        Inserts a new key into the Red-Black Tree.
+
+        @param i: The key value to insert.
+        @return: The inserted key value.
+        """
+        if self.NIL != self.find(self.T, i):
+            return 0
+
+        z = Node(key=i)
+        y = self.NIL
+        x = self.T
+        while x != self.NIL:
+            y = x
+            y.size += 1  # Increment size of each traversed node
+            if z.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+
+        z.parent = y
+        if y == self.NIL:
+            self.T = z
+        elif z.key < y.key:
+            y.left = z
+        else:
+            y.right = z
+
+        z.left = z.right = self.NIL
+        z.color = COLOR.RED
+        self.insert_fixup(z)
+
+        return i
+
+    def count_smaller_than(self, i: int) -> int:
+        """
+        Counts the number of elements in the tree smaller than i.
+
+        @param i: The key value to compare.
+        @return: The count of elements smaller than i.
+        """
+        x = self.T
+        count = 0
+        while x != self.NIL:
+            if i < x.key:
+                x = x.left
+            elif i == x.key:
+                count += x.left.size + 1
+                break
+            else:
+                count += x.left.size + 1
+                x = x.right
+        return count
