@@ -74,6 +74,40 @@ def beer_sheva_temps():
     print(f'Most Supported Statement: Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
 
+def dead_sea_level():
+    data = pd.read_csv('data/dead_sea.csv')
+    data['Date'] = pd.to_datetime(data['Date'], format='%d/%m/%Y')
+
+    f_x = lambda x: x.SeaLevel
+    statement = (0, math.inf)
+    constraints = lambda x1, x2: True
+    before_1991 = rectangular_region(data, {'Date': ('01/01/1900', '12/31/1991')})
+    after_1991 = rectangular_region(data, {'Date': ('01/01/1992', '12/31/2025')})
+
+    s1 = support.baseline_unconstrained(after_1991, before_1991, f_x, statement)
+    s2 = support.exact_unconstrained(after_1991, before_1991, f_x, statement)
+
+    s3 = support.baseline_constrained(after_1991, before_1991, f_x, statement, constraints)
+    s4 = support.exact_constrained(after_1991, before_1991, f_x, statement, constraints)
+
+    s5 = support.pair_sampling(data, after_1991, before_1991, f_x, statement, constraints, 1)
+    s6 = support.point_sampling(data, after_1991, before_1991, f_x, statement)
+
+    ts = support.tightest_statement(after_1991, before_1991, f_x, 0.95, constraints)
+    mss = support.most_supported_statement(after_1991, before_1991, f_x, 3, constraints)
+
+    print('Statement: Since 1991 the Dead Sea level is on the rise')
+    print(f'Baseline Unconstrained: {s1 * 100:.2f}%')
+    print(f'Exact Unconstrained: {s2 * 100:.2f}%')
+    print(f'Baseline Constrained: {s3 * 100:.2f}%')
+    print(f'Exact Constrained: {s4 * 100:.2f}%')
+    print(f'Pair Sampling: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
+    print(f'Point Sampling: {s6 * 100:.2f}%')
+    print(f'Tightest Statement (for 3 meters difference): {ts}')
+    print(f'Most Supported Statement: Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+
+
 if __name__ == '__main__':
     # example_usage()
     beer_sheva_temps()
+    dead_sea_level()
