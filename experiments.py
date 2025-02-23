@@ -268,14 +268,3 @@ def danish_house():
     print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
     print(f'Tightest Statement (at least 95% support): {ts}')
     print(f'Most Supported Statement (for 200K$ difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
-
-
-if __name__ == '__main__':
-    # example_usage()
-    # beer_sheva_temps()
-    # dead_sea_level()
-    # african_gdp()
-    # germany_rainfall()
-    # danish_house()
-    # beer_sheva_temps_ts_graph()
-    beer_sheva_temps_mss_graph()
