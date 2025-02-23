@@ -334,4 +334,4 @@ def most_supported_statement(
         if support > max_support:
             max_support = support
             best_lower, best_upper = lower, differences[high_idx]
-    return (float(best_lower), float(best_upper)), (float(max_support) / len(differences))
+    return (float(best_lower), float(best_upper)), float(max_support) / len(differences)

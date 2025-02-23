@@ -1,5 +1,7 @@
 import math
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
@@ -72,6 +74,95 @@ def beer_sheva_temps():
     print(f'Point Sampling Unconstrained: {s6 * 100:.2f}%')
     print(f'Tightest Statement (at least 95% support): {ts}')
     print(f'Most Supported Statement (for 15 degree difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+
+
+def beer_sheva_temps_ts_graph():
+    data = pd.read_csv('data/beer-sheva_temps.csv')
+    data['datetime'] = pd.to_datetime(data['datetime'], format='%d/%m/%Y')
+
+    f_x = lambda x: x.temp
+    winter = rectangular_region(data, {'datetime': ('01/01/2023', '03/31/2023')})
+    summer = rectangular_region(data, {'datetime': ('06/01/2023', '08/31/2023')})
+    constraints = lambda x1, x2: True
+
+    ts_per_support = {
+        s / 100: support.tightest_statement(summer, winter, f_x, s / 100, constraints)
+        for s in range(0, 100, 5)
+    }
+
+    # Extract support values (x-axis)
+    supports = list(ts_per_support.keys())
+
+    # Extract interval ranges (y-axis)
+    y_start = [interval[0] for interval in ts_per_support.values()]  # Start of the interval
+    y_end = [interval[1] for interval in ts_per_support.values()]  # End of the interval
+
+    # Create a figure and axis
+    plt.figure(figsize=(8, 5))
+
+    # Plot sticks (vertical lines from x_start to x_end at each support point)
+    plt.vlines(supports, y_start, y_end, colors='b', linewidth=2, label="Tightest Statement")
+
+    # Customize the graph
+    plt.xlabel("Support")
+    plt.ylabel("Tightest Statement")
+    plt.title("Tightest Statement Per Support")
+    plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.6)
+
+    # Show the plot
+    plt.show()
+
+
+def beer_sheva_temps_mss_graph():
+    data = pd.read_csv('data/beer-sheva_temps.csv')
+    data['datetime'] = pd.to_datetime(data['datetime'], format='%d/%m/%Y')
+
+    f_x = lambda x: x.temp
+    winter = rectangular_region(data, {'datetime': ('01/01/2023', '03/31/2023')})
+    summer = rectangular_region(data, {'datetime': ('06/01/2023', '08/31/2023')})
+    constraints = lambda x1, x2: True
+
+    mss_per_range = {
+        r: support.most_supported_statement(summer, winter, f_x, r, constraints)
+        for r in range(0, 50, 1)
+    }
+
+    # Extract data
+    supports = list(mss_per_range.keys())  # x positions (support ranges)
+    statement_ranges = [val[0] for val in mss_per_range.values()]  # Extracted statements
+    support_values = [val[1] for val in mss_per_range.values()]  # Support values
+
+    # Convert range keys to single representative X positions (midpoint for visualization)
+    x_positions = [np.mean(s) for s in supports]
+
+    # Extract statement start and end points
+    y_start = [s[0] for s in statement_ranges]
+    y_end = [s[1] for s in statement_ranges]
+
+    # Create a figure with 2 subplots
+    fig, axes = plt.subplots(nrows=2, ncols=1, figsize=(8, 8), sharex=True)
+
+    # First plot: Blue vertical sticks for Statements
+    axes[0].vlines(x_positions, y_start, y_end, colors='b', linewidth=2, label="Statement Ranges")
+    axes[0].set_ylabel("Statement Range")
+    axes[0].set_title("Most Supported Statement Per Statement Range")
+    axes[0].legend()
+    axes[0].grid(True, linestyle="--", alpha=0.6)
+
+    # Second plot: Red bars for Support values
+    axes[1].bar(x_positions, support_values, width=0.2, color='r', alpha=0.6, label="Support Values")
+    axes[1].set_xlabel("Statement Ranges")
+    axes[1].set_ylabel("Support Value")
+    axes[1].set_title("Support Per Statement Range")
+    axes[1].legend()
+    axes[1].grid(True, linestyle="--", alpha=0.6)
+
+    # Adjust layout
+    plt.tight_layout()
+
+    # Show the plot
+    plt.show()
 
 
 def dead_sea_level():
@@ -158,6 +249,7 @@ def germany_rainfall():
     print(f'Tightest Statement (at least 95% support): {ts}')
     print(f'Most Supported Statement (for 5mm difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
+
 def danish_house():
     data = pd.read_csv('data/danish_house.csv')
 
@@ -170,16 +262,20 @@ def danish_house():
     ts = support.tightest_statement(data, data, f_x, 0.95, constraints)
     mss = support.most_supported_statement(data, data, f_x, 200_000, constraints)
 
-    print('Statement: All houses in any city with the same amount of rooms, are sold in approximately the same price at that quarter of year.'
-          'I.e. all house purchases with the same year quarter, city and rooms will have price difference of no more than 100K')
+    print(
+        'Statement: All houses in any city with the same amount of rooms, are sold in approximately the same price at that quarter of year.'
+        'I.e. all house purchases with the same year quarter, city and rooms will have price difference of no more than 100K')
     print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
     print(f'Tightest Statement (at least 95% support): {ts}')
     print(f'Most Supported Statement (for 200K$ difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
+
 if __name__ == '__main__':
     # example_usage()
-    beer_sheva_temps()
-    dead_sea_level()
-    african_gdp()
-    germany_rainfall()
-    danish_house()
+    # beer_sheva_temps()
+    # dead_sea_level()
+    # african_gdp()
+    # germany_rainfall()
+    # danish_house()
+    # beer_sheva_temps_ts_graph()
+    beer_sheva_temps_mss_graph()
