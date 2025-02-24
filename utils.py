@@ -1,9 +1,8 @@
-from functools import lru_cache
 from typing import Dict, Tuple, Callable, Union, Any
 
 import pandas as pd
 
-@lru_cache(maxsize=1024)
+
 def rectangular_region(data: pd.DataFrame, bounds: Dict[str, Tuple[Any, Any]]) -> pd.DataFrame:
     """
     Filters the dataset to return records where each specified column value is within the given bounds.
@@ -26,7 +25,7 @@ def rectangular_region(data: pd.DataFrame, bounds: Dict[str, Tuple[Any, Any]]) -
         )
     )
 
-@lru_cache(maxsize=1024)
+
 def circular_region(data: pd.DataFrame, centers_radii: Dict[str, Tuple[float, float]]) -> pd.DataFrame:
     """
     Filters the dataset to return records where each specified column value is within a circular boundary.
@@ -47,7 +46,7 @@ def circular_region(data: pd.DataFrame, centers_radii: Dict[str, Tuple[float, fl
                      for col, (center, radius) in centers_radii.items())
     )
 
-@lru_cache(maxsize=1024)
+
 def validate_region(
         x1: Union[Tuple[Any, ...], pd.Series],
         region: pd.DataFrame,
