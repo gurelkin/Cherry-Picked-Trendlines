@@ -141,9 +141,11 @@ def exact_constrained(
     previous_valid_left_region = pd.DataFrame()
     for x2 in right_region.itertuples(index=False):
         current_valid_left_region = validate_region(x2, left_region, constraints)
+
         points_to_remove = previous_valid_left_region[
             ~previous_valid_left_region.isin(current_valid_left_region).all(1)]
         points_to_add = current_valid_left_region[~current_valid_left_region.isin(previous_valid_left_region).all(1)]
+
         for x1 in points_to_remove.itertuples(index=False):
             rbt.delete(quantifier(x1))
         for x1 in points_to_add.itertuples(index=False):
@@ -151,6 +153,7 @@ def exact_constrained(
         previous_valid_left_region = current_valid_left_region
         total += rbt.size()
         f_x2 = quantifier(x2)
+
         low_idx = rbt.count_smaller_equal_than(f_x2 + lower)
         high_idx = rbt.count_smaller_than(f_x2 + upper)
         if low_idx < high_idx:

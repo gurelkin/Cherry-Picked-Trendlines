@@ -327,9 +327,6 @@ class RedBlackTree:
         @param k: The key value to insert.
         @return: The inserted key value.
         """
-        if self.NIL != self.find(self.T, k):
-            return 0
-
         z = Node(key=k)
         y = self.NIL
         x = self.T
