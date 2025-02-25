@@ -55,25 +55,14 @@ def beer_sheva_temps():
 
     s1 = support.baseline_unconstrained(summer, winter, f_x, statement)
     s2 = support.exact_unconstrained(summer, winter, f_x, statement)
-
-    s3 = support.baseline_constrained(summer, winter, f_x, statement, constraints)
-    s4 = support.exact_constrained(summer, winter, f_x, statement, constraints)
-
-    s5 = support.pair_sampling(data, summer, winter, f_x, statement, constraints, 0.95)
-    s6 = support.point_sampling(data, summer, winter, f_x, statement)
-
+    s3 = support.point_sampling(data, summer, winter, f_x, statement)
     ts = support.tightest_statement(summer, winter, f_x, 0.95, constraints)
-    mss = support.most_supported_statement(summer, winter, f_x, 15, constraints)
 
     print('Statement: In Beer-Sheva the summer is hotter than the winter')
     print(f'Baseline Unconstrained: {s1 * 100:.2f}%')
     print(f'Exact Unconstrained: {s2 * 100:.2f}%')
-    print(f'Baseline Constrained: {s3 * 100:.2f}%')
-    print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
-    print(f'Point Sampling Unconstrained: {s6 * 100:.2f}%')
+    print(f'Point Sampling Unconstrained: {s3 * 100:.2f}%')
     print(f'Tightest Statement (at least 95% support): {ts}')
-    print(f'Most Supported Statement (for 15 degree difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
 
 def beer_sheva_temps_ts_graph():
@@ -177,25 +166,14 @@ def dead_sea_level():
 
     s1 = support.baseline_unconstrained(after_1991, before_1991, f_x, statement)
     s2 = support.exact_unconstrained(after_1991, before_1991, f_x, statement)
-
-    s3 = support.baseline_constrained(after_1991, before_1991, f_x, statement, constraints)
-    s4 = support.exact_constrained(after_1991, before_1991, f_x, statement, constraints)
-
-    s5 = support.pair_sampling(data, after_1991, before_1991, f_x, statement, constraints, 0.95)
-    s6 = support.point_sampling(data, after_1991, before_1991, f_x, statement)
-
-    ts = support.tightest_statement(after_1991, before_1991, f_x, 0.95, constraints)
-    mss = support.most_supported_statement(after_1991, before_1991, f_x, 3, constraints)
+    s3 = support.point_sampling(data, after_1991, before_1991, f_x, statement)
+    mss = support.most_supported_statement(after_1991, before_1991, f_x, 30, constraints)
 
     print('Statement: Since 1991 the Dead Sea level is on the rise')
     print(f'Baseline Unconstrained: {s1 * 100:.2f}%')
     print(f'Exact Unconstrained: {s2 * 100:.2f}%')
-    print(f'Baseline Constrained: {s3 * 100:.2f}%')
-    print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
-    print(f'Point Sampling Unconstrained: {s6 * 100:.2f}%')
-    print(f'Tightest Statement (at least 95% support): {ts}')
-    print(f'Most Supported Statement (for 3 meters difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+    print(f'Point Sampling Unconstrained: {s3 * 100:.2f}%')
+    print(f'Most Supported Statement (for 30 meters difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
 
 def african_gdp():
@@ -207,19 +185,17 @@ def african_gdp():
     gdp_2009 = rectangular_region(data, {'Year': (2009, 2009)})
     constraints = lambda x1, x2: x1.Country == x2.Country
 
-    s3 = support.baseline_constrained(gdp_2008, gdp_2009, f_x, statement, constraints)
-    s4 = support.exact_constrained(gdp_2008, gdp_2009, f_x, statement, constraints)
-
-    s5 = support.pair_sampling(data, gdp_2008, gdp_2009, f_x, statement, constraints, 0.95)
-
+    s1 = support.baseline_constrained(gdp_2008, gdp_2009, f_x, statement, constraints)
+    s2 = support.exact_constrained(gdp_2008, gdp_2009, f_x, statement, constraints)
+    s3 = support.pair_sampling(data, gdp_2008, gdp_2009, f_x, statement, constraints, 0.95)
     ts = support.tightest_statement(gdp_2008, gdp_2009, f_x, 0.95, constraints)
     mss = support.most_supported_statement(gdp_2008, gdp_2009, f_x, 1_000_000_000, constraints)
 
     print('Statement: African countries did not suffer from the great recession of 2008, '
           'i.e. their GDP did not decreased from 2008 to 2009')
-    print(f'Baseline Constrained: {s3 * 100:.2f}%')
-    print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
+    print(f'Baseline Constrained: {s1 * 100:.2f}%')
+    print(f'Exact Constrained: {s2 * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s3[0] * 100:.2f}%, Error Margin={s3[1] * 100:.2f}%')
     print(f'Tightest Statement (at least 95% support): {ts}')
     print(f'Most Supported Statement(for 1B$ difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
@@ -233,38 +209,70 @@ def germany_rainfall():
     berlin = rectangular_region(data, {'City': ('Berlin', 'Berlin')})
     constraints = lambda x1, x2: x1.Month == x2.Month and x1.Year == x2.Year
 
-    s3 = support.baseline_constrained(dusseldorf, berlin, f_x, statement, constraints)
-    s4 = support.exact_constrained(dusseldorf, berlin, f_x, statement, constraints)
+    s1 = support.baseline_constrained(dusseldorf, berlin, f_x, statement, constraints)
+    s2 = support.exact_constrained(dusseldorf, berlin, f_x, statement, constraints)
+    s3 = support.pair_sampling(data, dusseldorf, berlin, f_x, statement, constraints, 0.95)
+    mss = support.most_supported_statement(dusseldorf, berlin, f_x, 30, constraints)
 
-    s5 = support.pair_sampling(data, dusseldorf, berlin, f_x, statement, constraints, 0.95)
-
-    ts = support.tightest_statement(dusseldorf, berlin, f_x, 0.95, constraints)
-    mss = support.most_supported_statement(dusseldorf, berlin, f_x, 5, constraints)
-
-    print('Statement: Dusseldorf and Berlin has approximately the same rain amount for the same month.'
-          'I.e. for any month, the difference is between -2.5mm to 2.5mm')
-    print(f'Baseline Constrained: {s3 * 100:.2f}%')
-    print(f'Exact Constrained: {s4 * 100:.2f}%')
-    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
-    print(f'Tightest Statement (at least 95% support): {ts}')
-    print(f'Most Supported Statement (for 5mm difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+    print(
+        'Statement: Dusseldorf and Berlin has approximately the same rain (up to 2.5mm difference) amount for the same month.')
+    print(f'Baseline Constrained: {s1 * 100:.2f}%')
+    print(f'Exact Constrained: {s2 * 100:.2f}%')
+    print(f'Pair Sampling Constrained: Support={s3[0] * 100:.2f}%, Error Margin={s3[1] * 100:.2f}%')
+    print(f'Most Supported Statement (for 30mm difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
 
 
 def danish_house():
     data = pd.read_csv('data/danish_house.csv')
 
     f_x = lambda x: x.purchase_price
-    statement = (-100_000, 100_000)
-    constraints = lambda x1, x2: x1.city == x2.city and x1.quarter == x2.quarter and x1.no_rooms == x2.no_rooms
+    old = rectangular_region(data, {'year_build': (-math.inf, 1899)})
+    new = rectangular_region(data, {'year_build': (1900, math.inf)})
+    statement = (0, math.inf)
 
-    s5 = support.pair_sampling(data, data, data, f_x, statement, constraints, 0.95)
-
-    ts = support.tightest_statement(data, data, f_x, 0.95, constraints)
-    mss = support.most_supported_statement(data, data, f_x, 200_000, constraints)
-
+    s1 = support.point_sampling(data, old, new, f_x, statement)
     print(
-        'Statement: All houses in any city with the same amount of rooms, are sold in approximately the same price at that quarter of year.'
-        'I.e. all house purchases with the same year quarter, city and rooms will have price difference of no more than 100K')
-    print(f'Pair Sampling Constrained: Support={s5[0] * 100:.2f}%, Error Margin={s5[1] * 100:.2f}%')
-    print(f'Tightest Statement (at least 95% support): {ts}')
-    print(f'Most Supported Statement (for 200K$ difference): Statement={mss[0]}, Support={mss[1] * 100:.2f}%')
+        'Statement: In Denmark the prices of old (built before 1900) house are higher than new houses (built from 1900).'
+    )
+    print(f'Point Sampling Unconstrained: {s1 * 100:.2f}%')
+
+
+def stochastic_danish_house():
+    data = pd.read_csv('data/danish_house.csv')
+    danish_house_subset = data.sample(n=10_000, random_state=42)
+
+    f_x = lambda x: x.purchase_price
+    old = rectangular_region(danish_house_subset, {'year_build': (-math.inf, 1899)})
+    new = rectangular_region(danish_house_subset, {'year_build': (1900, math.inf)})
+    statement = (0, math.inf)
+
+    percentages = list(range(5, 101, 5))
+    point_sampling_results = []
+    exact_unconstrained_results = []
+
+    exact_unconstrained_total = support.exact_unconstrained(old, new, f_x, statement)
+
+    for p in percentages:
+        sample_size = round(p / 100 * len(danish_house_subset))
+        sample_data = danish_house_subset.sample(n=sample_size, random_state=42)
+
+        old_sample = rectangular_region(sample_data, {'year_build': (-math.inf, 1899)})
+        new_sample = rectangular_region(sample_data, {'year_build': (1900, math.inf)})
+
+        s_point = support.point_sampling(sample_data, old_sample, new_sample, f_x, statement)
+        s_exact_unconstrained = support.exact_unconstrained(old_sample, new_sample, f_x, statement)
+
+        point_sampling_results.append(s_point)
+        exact_unconstrained_results.append(s_exact_unconstrained)
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(percentages, point_sampling_results, label='Point Sampling', color='blue', marker='o')
+    plt.plot(percentages, exact_unconstrained_results, label='Exact Unconstrained', color='green', marker='s')
+    plt.axhline(y=exact_unconstrained_total, color='red', linestyle='--', label='Exact Unconstrained (Full Dataset)')
+
+    plt.xlabel("Sample Percentage Size")
+    plt.ylabel("Support Value")
+    plt.title("Exact VS Point Sampling")
+    plt.legend()
+    plt.grid(True, linestyle="--", alpha=0.6)
+    plt.show()

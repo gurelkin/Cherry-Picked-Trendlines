@@ -190,12 +190,12 @@ def pair_sampling(
     lower, upper = statement
     satisfied = 0
     for _ in range(len(dataset)):
-        x2 = right_region.sample(n=1).iloc[0]
+        x2 = right_region.sample(n=1, random_state=42).iloc[0]
         valid_left_region = validate_region(x2, left_region, constraints)
         if valid_left_region.empty:
             continue
 
-        x1 = valid_left_region.sample(n=1).iloc[0]
+        x1 = valid_left_region.sample(n=1, random_state=42).iloc[0]
         if lower < quantifier(x1) - quantifier(x2) < upper:
             satisfied += 1
     support = satisfied / len(dataset)
@@ -229,8 +229,8 @@ def point_sampling(
     """
     lower, upper = statement
     satisfied = 0
-    left_samples = left_region.sample(n=len(dataset), replace=True).itertuples(index=False)
-    right_samples = right_region.sample(n=len(dataset), replace=True).itertuples(index=False)
+    left_samples = left_region.sample(n=len(dataset), replace=True, random_state=42).itertuples(index=False)
+    right_samples = right_region.sample(n=len(dataset), replace=True, random_state=42).itertuples(index=False)
     cumulative = np.array([quantifier(x1) for x1 in left_samples])
     cumulative.sort()
     for x2 in right_samples:
