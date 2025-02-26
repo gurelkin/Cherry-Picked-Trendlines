@@ -12,8 +12,8 @@ The `report.ipynb` notebook contains an extensive coverage of the paper's algori
 ├── experiments.py         # Defines various statistical experiments
 ├── support.py             # Core support computation functions
 ├── rbt.py                 # Red-Black Tree implementation
-├── region.py              # Utilities for handling dataset 'regions' (see paper)
-├── report.ipynb           # Jupyter Notebook with experiment explanations, results, and plots
+├── region_extractor.py    # Utilities for handling dataset 'regions' (see paper)
+├── report.ipynb           # Jupyter Notebook with experiment explainations, results and plots
 ├── requirements.txt       # Project dependencies
 └── README.md              # This file
 ```
@@ -40,7 +40,7 @@ Additionally, this repository comprises different types of experiments, which co
 - Uses **exact and baseline support computations**.
 
 ### **3. African GDP Analysis**
-- Assesses whether African countries' GDPs were affected by the 2008 financial crisis.
+- Assesses whether African countries GDPs were affected by the 2008 financial crisis.
 - Includes **constraint-based comparisons** to ensure accurate cross-country GDP trends.
 
 ### **4. German Rainfall Analysis**
@@ -89,7 +89,7 @@ Additionally, this repository comprises different types of experiments, which co
 
 \[2\] Datasets used in our experiments:
 - [`africa_gdp.csv`](https://www.kaggle.com/datasets/stealthtechnologies/gdp-growth-of-african-countries/data)
-- [`beer-sheva_temps.csv`](???)
+- [`beer-sheva_temps.csv`](https://www.visualcrossing.com/weather-query-builder/)
 - [`danish_house.csv`](https://www.kaggle.com/datasets/martinfrederiksen/danish-residential-housing-prices-1992-2024?select=DKHousingPricesSample100k.csv)
 - [`dead_sea.csv`](https://data.gov.il/dataset/https-www-data-gov-il-dataset-683/resource/823479b4-4771-43d8-9189-6a2a1dcaaf10)
 - [`rainfall_germany.csv`](https://www.kaggle.com/datasets/heidarmirhajisadati/germany-city-rainfall-data)
