@@ -1,10 +1,12 @@
-# **Project Title: Statistical Analysis of Data-Based Statements**
+# **Detecting Cherry Picked Trendlines - Statistical Analysis of Data-Based Statements**
 
 ## **Overview**
 This project provides a framework for evaluating statistical statements over structured datasets. It calculates the **"support"** of statements, i.e. how "strong" or "correct" it is, using both brute-force and optimized methods, as well as **Monte Carlo sampling techniques**. The project is built with **Python** and uses **Pandas, NumPy, SciPy, and Red-Black Trees** for efficient calculations.
 
 The framework is structured to analyze **statements of comparative nature** across different datasets (e.g., temperature changes, economic trends, property prices) and to generate both **numerical results and visualizations**.
 
+* The `report.ipynb` contains an extensive mathematical and algorithmic analysis of the algorithms implemented in this project.
+* Also, the report contains interesting experiments and explanations on them which we conducted upon real-world datasets.
 ## **Directory Structure**
 ```
 ├── data/                  # Contains CSV datasets
