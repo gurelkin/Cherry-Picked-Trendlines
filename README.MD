@@ -11,7 +11,7 @@ The `report.ipynb` notebook contains an extensive coverage of the paper's algori
 ├── data/                  # Contains CSV datasets, feel free to add your own and experiment!
 ├── experiments.py         # Defines various statistical experiments
 ├── support.py             # Core support computation functions
-├── rbt.py                 # Red-Black Tree implementation
+├── rbt.py                 # Red-Black Tree implementation [3]
 ├── region_extractor.py    # Utilities for handling dataset 'regions' (see paper)
 ├── report.ipynb           # Jupyter Notebook with experiment explainations, results and plots
 ├── requirements.txt       # Project dependencies
@@ -93,3 +93,6 @@ Additionally, this repository comprises different types of experiments, which co
 - [`danish_house.csv`](https://www.kaggle.com/datasets/martinfrederiksen/danish-residential-housing-prices-1992-2024?select=DKHousingPricesSample100k.csv)
 - [`dead_sea.csv`](https://data.gov.il/dataset/https-www-data-gov-il-dataset-683/resource/823479b4-4771-43d8-9189-6a2a1dcaaf10)
 - [`rainfall_germany.csv`](https://www.kaggle.com/datasets/heidarmirhajisadati/germany-city-rainfall-data)
+
+
+\[3\] Red-Black Tree implementation adapted from [philgookang's repository](https://github.com/philgookang/algorithm_order_statistic_tree/tree/master)
