@@ -1,60 +1,32 @@
-# **Detecting Cherry Picked Trendlines - Statistical Analysis of Data-Based Statements**
+# **Detecting Cherry Picked Trendlines - Statistical Validation of Data-Based Statements**
 
 ## **Overview**
-This project provides a framework for evaluating statistical statements over structured datasets. It calculates the **"support"** of statements, i.e. how "strong" or "correct" it is, using both brute-force and optimized methods, as well as **Monte Carlo sampling techniques**. The project is built with **Python** and uses **Pandas, NumPy, SciPy, and Red-Black Trees** for efficient calculations.
+This project provides a framework for evaluating statistical statements over structured datasets, as presented by Asudeh *et al.* in their paper "On Detecting Cherry-picked Trendlines" \[1\]. Our implementation of the *support metric* quantifies the "correctness" of a statement, based on a given dataset.
+The project is structured to analyze statements of comparative nature across different datasets (e.g., temperature changes, economic trends, property prices) and to generate both **numerical results and visualizations**.
 
-The framework is structured to analyze **statements of comparative nature** across different datasets (e.g., temperature changes, economic trends, property prices) and to generate both **numerical results and visualizations**.
+The `report.ipynb` notebook contains an extensive coverage of the paper's algorithms, as well as  interesting experiments (with explanations) which we conducted on real-world datasets \[2\].
 
-* The `report.ipynb` contains an extensive mathematical and algorithmic analysis of the algorithms implemented in this project.
-* Also, the report contains interesting experiments and explanations on them which we conducted upon real-world datasets.
 ## **Directory Structure**
 ```
-├── data/                  # Contains CSV datasets
+├── data/                  # Contains CSV datasets, feel free to add your own and experiment!
 ├── experiments.py         # Defines various statistical experiments
 ├── support.py             # Core support computation functions
 ├── rbt.py                 # Red-Black Tree implementation
-├── region_extractor.py    # Region querier/filterer
-├── report.ipynb           # Jupyter Notebook with experiments explainations, results and graphs
+├── region.py              # Utilities for handling dataset 'regions' (see paper)
+├── report.ipynb           # Jupyter Notebook with experiment explanations, results, and plots
 ├── requirements.txt       # Project dependencies
 └── README.md              # This file
 ```
 
-## **Features**
-- **Baseline and Exact Support Calculations**
-  - `baseline_constrained`, `exact_constrained`, `baseline_unconstrained`, `exact_unconstrained`
-- **Monte Carlo Sampling Methods**
-  - `pair_sampling`, `point_sampling`
-- **Statement Optimizations**
-  - `tightest_statement`, `most_supported_statement`
-- **Experiments on Real-World Use-Cases**
-  - **Algorithms Analysis**
-    - `beer_sheva_temps`, `dead_sea_level`, `african_gdp`, `germany_rainfall`, `danish_house`
-  - **Graphical Analysis**
-    - `beer_sheva_temps_ts_graph`, `beer_sheva_temps_mss_graph`, `stochastic_danish_house`
-
 ## **Installation**
-Ensure you have the following dependencies installed:
+Clone this repository and ensure you have all the dependencies installed using:
 ```bash
 pip install -r requirements.txt
 ```
-Additionally, ensure that the `RedBlackTree` implementation is accessible under the `rbt` module.
 
 ## **Usage**
-The project consists of different types of experiments. You can run them via the `experiments.py` script or interactively using `report.ipynb`.
-
-### **1. Running Experiments**
-To execute predefined experiments, use:
-```python
-import experiments
-experiments.beer_sheva_temps()
-# ...
-```
-
-### **2. Running the Jupyter Report**
-To analyze results interactively:
-```bash
-jupyter notebook report.ipynb
-```
+Our implementation of the various support calculation algorithms from the paper \[1\] are well-documented and can be used programmatically by importing the `support.py` module.
+Additionally, this repository comprises different types of experiments, which could be accessed through the `experiments.py` module, or executed interactively in the `report.ipynb` notebook. You can run them via the `experiments.py` script or interactively using `report.ipynb`.
 
 ## **Experiments Overview**
 ### **1. Beer-Sheva Temperature Analysis**
@@ -68,7 +40,7 @@ jupyter notebook report.ipynb
 - Uses **exact and baseline support computations**.
 
 ### **3. African GDP Analysis**
-- Assesses whether African countries GDPs were affected by the 2008 financial crisis.
+- Assesses whether African countries' GDPs were affected by the 2008 financial crisis.
 - Includes **constraint-based comparisons** to ensure accurate cross-country GDP trends.
 
 ### **4. German Rainfall Analysis**
@@ -97,31 +69,27 @@ jupyter notebook report.ipynb
 ## **Key Algorithms Used**
 1. **Brute-Force Computation (Baseline Methods)**
    - Compares all valid region pairs to compute support.
-   - O(N²) complexity.
+   - $O(n^2)$ complexity.
 
 2. **Optimized Computation (Binary Search/Red-Black Tree Methods)**
    - Uses an **ordered array** or **self-balancing Red-Black Tree** to store order statistics.
-   - Improves efficiency to **O(N log N)**.
+   - Improves efficiency to $O(n \log n)$.
 
 3. **Monte Carlo Sampling (Pair & Point Sampling)**
    - Efficiently estimates support with random sampling.
    - Can provide confidence/error margin for results.
-   - O(N) complexity.
+   - $O(n)$ or $O(n \log n)$ complexity.
 
 ## **Contributors**
-   - Shahar Blank
-   - Gur Elkin
+   - [Shahar Blank](https://github.com/BlankShahar)
+   - [Gur Elkin](https://github.com/gurelkin)
 
 ## **References**
-This project is a reproduce work of the paper "On Detecting Cherry-picked Trendlines".
-   - Abolfazl Asudeh
-   - H. V. Jagadish
-   - You (Will) Wu
-   - Cong Yu
+\[1\] [Asudeh, A., Jagadish, H.V., Wu, Y. and Yu, C., 2020. On detecting cherry-picked trendlines. _Proceedings of the VLDB Endowment_, _13_(6), pp.939-952.](https://www.vldb.org/pvldb/vol13/p939-asudeh.pdf)
 
-   * https://www.vldb.org/pvldb/vol13/p939-asudeh.pdf
-   * https://dl.acm.org/doi/10.14778/3380750.3380762
-
----
-🚀 **Developed for Advanced Data-Driven Statistical Analysis.**
-
+\[2\] Datasets used in our experiments:
+- [`africa_gdp.csv`](https://www.kaggle.com/datasets/stealthtechnologies/gdp-growth-of-african-countries/data)
+- [`beer-sheva_temps.csv`](???)
+- [`danish_house.csv`](https://www.kaggle.com/datasets/martinfrederiksen/danish-residential-housing-prices-1992-2024?select=DKHousingPricesSample100k.csv)
+- [`dead_sea.csv`](https://data.gov.il/dataset/https-www-data-gov-il-dataset-683/resource/823479b4-4771-43d8-9189-6a2a1dcaaf10)
+- [`rainfall_germany.csv`](https://www.kaggle.com/datasets/heidarmirhajisadati/germany-city-rainfall-data)
