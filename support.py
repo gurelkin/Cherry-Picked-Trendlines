@@ -255,6 +255,12 @@ def tightest_statement(
     """
     Finds the smallest range of values that achieves the specified support.
 
+    Algorithm Idea:
+    The algorithm computes all valid differences, sorts them, and applies a sliding window approach.
+    The window size is determined by `support * len(differences)`,
+        and it moves across the sorted differences to find the range with the smallest width.
+    The window with the narrowest span is returned as the tightest statement.
+
     @param left_region: The left region (minuend) of the dataset.
     @param right_region: The right region (subtrahend) of the dataset.
     @param quantifier: A function that extracts a numerical value from a record.
@@ -301,6 +307,13 @@ def most_supported_statement(
 ) -> Tuple[Tuple[float, float], float]:
     """
     Finds the range of values that achieves the highest support.
+
+    Algorithm Idea:
+    The algorithm computes all valid differences and sorts them.
+    It then iterates through the sorted differences, using a fixed-size sliding window of `range_width`.
+    For each window, it calculates the number of values that fall within the range,
+        identifying the window with the highest count, i.e. highest support.
+    The range with the maximum support is returned along with its support value.
 
     @param left_region: The left region (minuend) of the dataset.
     @param right_region: The right region (subtrahend) of the dataset.
