@@ -6,7 +6,7 @@ import pandas as pd
 from pandas import DataFrame
 
 import support
-from utils import rectangular_region
+from region_extractor import rectangular_region
 
 
 def example_usage():

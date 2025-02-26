@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.stats import norm
 
 from rbt import RedBlackTree  # Order statistics red-black tree
-from utils import validate_region, rectangular_region
+from region_extractor import validate_region, rectangular_region
 
 
 def baseline_unconstrained(
